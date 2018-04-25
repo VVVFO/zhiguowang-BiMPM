@@ -159,7 +159,8 @@ class SentenceMatchModelGraph(object):
         Then for the correct label, we can just find the index of "1" in self.truths for the batch
         """
         gold_matrix = tf.one_hot(self.truth, num_classes, dtype=tf.float32)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=gold_matrix))
+        # self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=gold_matrix))
+        self.loss = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(gold_matrix, logits, 100))
 
         prediction_for_this_question = tf.argmax(self.prob[:, 1], 0)
         truth_for_this_question = tf.argmax(self.truth, 0)
