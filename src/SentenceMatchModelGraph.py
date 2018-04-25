@@ -167,7 +167,8 @@ class SentenceMatchModelGraph(object):
         # correct = tf.nn.in_top_k(logits, self.truth, 1)
         # self.eval_correct = tf.reduce_sum(tf.cast(correct, tf.int32))
         correct = tf.equal(prediction_for_this_question, truth_for_this_question)
-        self.eval_correct = tf.cast(correct, tf.int32)
+        self.eval_correct = tf.multiply(tf.cast(correct, tf.int32), tf.size(self.truth)[0])
+
         self.predictions = tf.argmax(self.prob[:, 1], 0)
 
         if not is_training: return
