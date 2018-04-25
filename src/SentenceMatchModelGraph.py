@@ -151,13 +151,24 @@ class SentenceMatchModelGraph(object):
         logits = tf.matmul(logits, w_1) + b_1
 
         self.prob = tf.nn.softmax(logits)
-        
+        """
+        Use a hacky way here to tweak the evaluation method.
+        As what we want is matching question with the correct pattern, not just given a question-pattern pair and see if it is a match
+        Therefore now each batch contains just a question with all patterns matched, and only one of them would have the category "1" denoting that they match, all other are "0" indicating they don't match
+        So for prediction we would not be argmaxing along axis 1 anymore, we should be argmaxing along the axis 0 (across all samples in the batch) for the column corresponding to "1"
+        Then for the correct label, we can just find the index of "1" in self.truths for the batch
+        """
         gold_matrix = tf.one_hot(self.truth, num_classes, dtype=tf.float32)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=gold_matrix))
 
-        correct = tf.nn.in_top_k(logits, self.truth, 1)
-        self.eval_correct = tf.reduce_sum(tf.cast(correct, tf.int32))
-        self.predictions = tf.argmax(self.prob, 1)
+        prediction_for_this_question = tf.argmax(self.prob[:, 1], 0)
+        truth_for_this_question = tf.argmax(self.truth, 0)
+
+        # correct = tf.nn.in_top_k(logits, self.truth, 1)
+        # self.eval_correct = tf.reduce_sum(tf.cast(correct, tf.int32))
+        correct = tf.equal(prediction_for_this_question, truth_for_this_question)
+        self.eval_correct = tf.cast(correct, tf.int32)
+        self.predictions = tf.argmax(self.prob[:, 1], 0)
 
         if not is_training: return
 
