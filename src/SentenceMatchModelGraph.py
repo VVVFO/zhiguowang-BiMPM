@@ -171,7 +171,7 @@ class SentenceMatchModelGraph(object):
         self.eval_correct = tf.reduce_sum(tf.multiply(tf.cast(correct, tf.int32), tf.ones_like(self.truth, dtype=tf.int32)))
 
         # now predictions don't return types, but the index of pattern
-        self.predictions = tf.argmax(self.prob[:, 1], 0) * tf.ones_like(self.truth)
+        self.predictions = tf.cast(prediction_for_this_question, tf.int32) * tf.ones_like(self.truth, dtype=tf.int32)
 
         if not is_training: return
 
