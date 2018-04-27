@@ -74,7 +74,7 @@ if __name__ == '__main__':
         saver.restore(sess, best_path)
         print("DONE!")
         acc = SentenceMatchTrainer.evaluation(sess, valid_graph, testDataStream, outpath=args.out_path,
-                                              label_vocab=label_vocab)
+                                              label_vocab=label_vocab, patterns_list=patterns_list)
         print("Accuracy for test set is %.2f" % acc)
 
 
