@@ -162,8 +162,18 @@ class SentenceMatchModelGraph(object):
         # self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=gold_matrix))
         self.loss = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(gold_matrix, logits, 100))
 
+        # as there should be n-1 labeled false and 1 labeled true
+        # but we don't know is true labeled as 1 or false
+        # obtain the label by 
+        label_for_correct = tf.cond(tf.count_nonzero(self.truth) > 1,
+                true_fn=lambda: tf.constant(0), 
+                false_fn=lambda: tf.constant(1))
+        # the truth array can either be 0000010000 or 11111101111
+        truth_for_this_question = tf.cond(tf.equal(label_for_correct, tf.constant(1)),
+                true_fn=lambda: tf.argmax(self.truth),
+                false_fn=lambda: tf.argmin(self.truth))
+
         prediction_for_this_question = tf.argmax(self.prob[:, 1], 0)
-        truth_for_this_question = tf.argmax(self.truth, 0)
 
         # correct = tf.nn.in_top_k(logits, self.truth, 1)
         # self.eval_correct = tf.reduce_sum(tf.cast(correct, tf.int32))
