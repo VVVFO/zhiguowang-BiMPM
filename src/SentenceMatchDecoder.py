@@ -17,6 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('--in_path', type=str, required=True, help='the path to the test file.')
     parser.add_argument('--out_path', type=str, required=True, help='The path to the output file.')
     parser.add_argument('--word_vec_path', type=str, help='word embedding file for the input file.')
+    parser.add_argument('--patterns_path', type=str, help='all patterns appear in the input file.')
 
     args, unparsed = parser.parse_known_args()
     
@@ -31,8 +32,11 @@ if __name__ == '__main__':
     print('Loading vocabs.')
     word_vocab = Vocab(args.word_vec_path, fileformat='txt3')
     label_vocab = Vocab(args.model_prefix + ".label_vocab", fileformat='txt2')
+    with open(args.patterns_path, "r") as f:
+        patterns_list = f.readlines()
     print('word_vocab: {}'.format(word_vocab.word_vecs.shape))
     print('label_vocab: {}'.format(label_vocab.word_vecs.shape))
+    print('pattern_list: {}'.format(len(patterns_list)))
     num_classes = label_vocab.size()
 
     if options.with_char:

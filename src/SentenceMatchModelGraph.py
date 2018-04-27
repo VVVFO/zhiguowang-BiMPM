@@ -170,7 +170,8 @@ class SentenceMatchModelGraph(object):
         correct = tf.equal(prediction_for_this_question, truth_for_this_question)
         self.eval_correct = tf.reduce_sum(tf.multiply(tf.cast(correct, tf.int32), tf.ones_like(self.truth, dtype=tf.int32)))
 
-        self.predictions = tf.argmax(self.prob[:, 1], 0)
+        # now predictions don't return types, but the index of pattern
+        self.predictions = tf.argmax(self.prob[:, 1], 0) * tf.ones_like(self.truth)
 
         if not is_training: return
 

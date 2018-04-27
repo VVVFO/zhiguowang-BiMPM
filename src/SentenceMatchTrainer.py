@@ -51,7 +51,7 @@ def output_probs(probs, label_vocab):
         out_string += " {}:{}".format(label_vocab.getWord(i), probs[i])
     return out_string.strip()
 
-def evaluation(sess, valid_graph, devDataStream, outpath=None, label_vocab=None):
+def evaluation(sess, valid_graph, devDataStream, outpath=None, label_vocab=None, patterns_list=None):
     if outpath is not None:
         result_json = {}
     total = 0
@@ -70,7 +70,8 @@ def evaluation(sess, valid_graph, devDataStream, outpath=None, label_vocab=None)
                     "truth": label,
                     "sent1": sentence1,
                     "sent2": sentence2,
-                    "prediction": label_vocab.getWord(predictions[i]),
+                    # "prediction": label_vocab.getWord(predictions[i]),
+                    "prediction": patterns_list[predictions[i]],
                     "probs": output_probs(probs[i], label_vocab),
                 }
     accuracy = correct / float(total) * 100
