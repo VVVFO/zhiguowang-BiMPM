@@ -162,7 +162,7 @@ def main(FLAGS):
     sys.stdout.flush()
                                     
     devDataStream = SentenceMatchDataStream(dev_path, word_vocab=word_vocab, char_vocab=char_vocab, label_vocab=label_vocab,
-                                              isShuffle=False, isLoop=True, isSort=True, options=FLAGS)
+                                              isShuffle=False, isLoop=True, isSort=False, options=FLAGS)
     print('Number of instances in devDataStream: {}'.format(devDataStream.get_num_instance()))
     print('Number of batches in devDataStream: {}'.format(devDataStream.get_num_batch()))
     sys.stdout.flush()
